@@ -6,12 +6,13 @@ resource "aws_instance" "demo-server" {
   ami = "ami-0f34c5ae932e6f0e4"
   instance_type = "t2.micro"
   key_name = "A.R-PROJECT"
-  security_groups = [ "demo-sg" ]
+  //security_groups = [ "demo-sg" ]
+  vpc_security_group_ids = [ aws_security_group.demo-sg.id ]
   subnet_id = aws_subnet.dpp-public-subnet-01.id
 }
 
 resource "aws_security_group" "demo-sg" {
-  name        = "allow_ssh"
+  name        = "demo-sg"
   description = "Allow ssh inbound traffic"
   vpc_id = aws_vpc.dpp-vpc.id
 
