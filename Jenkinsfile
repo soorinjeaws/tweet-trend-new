@@ -1,3 +1,4 @@
+
 pipeline {
     agent {
         label "maven"
@@ -12,7 +13,17 @@ pipeline {
                sh "mvn clean deploy"
             }
         }
+
+        stage('SonarQube analysis') { // Moved inside the 'stages' block
+            environment {
+                scannerHome = tool 'nasir-sonar-scanner'
+            }
+            steps {
+                withSonarQubeEnv('nasir-sonarqube-server') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
     }
 }
-
 
