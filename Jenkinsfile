@@ -1,4 +1,3 @@
-
 pipeline {
     agent {
         label "maven"
@@ -23,12 +22,8 @@ pipeline {
                 echo "unit test completed alas!! "
             }
         }
-           
 
-
-
-
-        stage('SonarQube analysis') { // Moved inside the 'stages' block
+        stage('SonarQube analysis') {
             environment {
                 scannerHome = tool 'nasir-sonar-scanner'
             }
@@ -38,6 +33,17 @@ pipeline {
                 }
             }
         }
+
+        stage('quality-gate-test') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS')
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK'){
+                        error "pipeline aborted due to qg failure: ${qg.status}"
+                    }
+                }
+            }
+        }
     }
 }
-
