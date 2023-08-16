@@ -1,5 +1,5 @@
 
-def registry = https://awssoorinje.jfrog.io/ui/admin/configuration/security/access_tokens'
+def registry = "https://awssoorinje.jfrog.io/ui/admin/configuration/security/access_tokens"
 pipeline {
     agent {
         label "maven"
