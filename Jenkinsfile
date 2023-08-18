@@ -1,6 +1,5 @@
-
 //def registry = "https://awssoorinje.jfrog.io/ui/admin/configuration/security/access_tokens"
-def registry =  'https://valaxy05.jfrog.io'
+def registry = 'https://valaxy05.jfrog.io'
 
 pipeline {
     agent {
@@ -13,9 +12,9 @@ pipeline {
     stages {
         stage('build') {
             steps {
-               echo " build started alas !! "
-               sh "mvn clean deploy -Dmaven.test.skip=true"
-               echo "build completed alas !! "
+                echo " build started alas !! "
+                sh "mvn clean deploy -Dmaven.test.skip=true"
+                echo "build completed alas !! "
             }
         }
 
@@ -51,14 +50,13 @@ pipeline {
             }
         }
 
-        
         stage("Jar Publish") {
-          steps {
-            script {
+            steps {
+                script {
                     echo '<--------------- Jar Publish Started --------------->'
-                     def server = Artifactory.newServer url:registry+"/artifactory" ,  credentialsId:"awssoorinje"
-                     def properties = "buildid=${env.BUILD_ID},commitid=${GIT_COMMIT}";
-                     def uploadSpec = """{
+                    def server = Artifactory.newServer(url: registry+"/artifactory", credentialsId:"awssoorinje")
+                    def properties = "buildid=${env.BUILD_ID},commitid=${GIT_COMMIT}"
+                    def uploadSpec = """{
                           "files": [
                             {
                               "pattern": "jarstaging/(*)",
@@ -69,15 +67,12 @@ pipeline {
                             }
                          ]
                      }"""
-                     def buildInfo = server.upload(uploadSpec)
-                     buildInfo.env.collect()
-                     server.publishBuildInfo(buildInfo)
-                     echo '<--------------- Jar Publish Ended --------------->'  
-            
+                    def buildInfo = server.upload(uploadSpec)
+                    buildInfo.env.collect()
+                    server.publishBuildInfo(buildInfo)
+                    echo '<--------------- Jar Publish Ended --------------->'
+                }
             }
-        }   
-    }   
-
-
+        }
     }
 }
