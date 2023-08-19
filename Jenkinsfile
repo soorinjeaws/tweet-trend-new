@@ -1,5 +1,5 @@
 //def registry = "https://awssoorinje.jfrog.io/ui/admin/configuration/security/access_tokens"
-def registry = 'https://valaxy05.jfrog.io'
+def registry = 'https://awssoorinje.jfrog.io/'
 
 pipeline {
     agent {
