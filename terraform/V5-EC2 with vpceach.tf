@@ -1,24 +1,23 @@
 provider "aws" {
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
 resource "aws_instance" "demo-server" {
-  ami = "ami-053b0d53c279acc90"
-  instance_type = "t2.micro"
-  key_name = "A.R-PROJECT"
-  //security_groups = [ "demo-sg" ]
-  vpc_security_group_ids = [ aws_security_group.demo-sg.id ]
-  subnet_id = aws_subnet.dpp-public-subnet-01.id
-  for_each = toset(["jenkins-master", "build-slave", "ansible"])
-   tags = {
-     Name = "${each.key}"
-   }
+  ami           = "ami-053b0d53c279acc90"
+  instance_type = each.key == "jenkins-master" || each.key == "build-slave" ? "t2.medium" : "t2.micro"
+  key_name      = "A.R-PROJECT"
+  vpc_security_group_ids = [aws_security_group.demo-sg.id]
+  subnet_id     = aws_subnet.dpp-public-subnet-01.id
+  for_each      = toset(["jenkins-master", "build-slave", "ansible"])
+  tags = {
+    Name = "${each.key}"
+  }
 }
 
 resource "aws_security_group" "demo-sg" {
   name        = "demo-sg"
   description = "Allow ssh inbound traffic"
-  vpc_id = aws_vpc.dpp-vpc.id
+  vpc_id      = aws_vpc.dpp-vpc.id
 
   ingress {
     description = "ssh access"
@@ -35,7 +34,6 @@ resource "aws_security_group" "demo-sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
 
   egress {
     from_port        = 0
@@ -58,20 +56,20 @@ resource "aws_vpc" "dpp-vpc" {
 }
 
 resource "aws_subnet" "dpp-public-subnet-01" {
-  vpc_id     = aws_vpc.dpp-vpc.id
-  cidr_block = "10.1.1.0/24"
+  vpc_id                  = aws_vpc.dpp-vpc.id
+  cidr_block              = "10.1.1.0/24"
   map_public_ip_on_launch = true
-  availability_zone = "us-east-1a"
+  availability_zone       = "us-east-1a"
   tags = {
     Name = "dpp-public-subnet-01"
   }
 }
 
 resource "aws_subnet" "dpp-public-subnet-02" {
-  vpc_id     = aws_vpc.dpp-vpc.id
-  cidr_block = "10.1.2.0/24"
+  vpc_id                  = aws_vpc.dpp-vpc.id
+  cidr_block              = "10.1.2.0/24"
   map_public_ip_on_launch = true
-  availability_zone = "us-east-1b"
+  availability_zone       = "us-east-1b"
   tags = {
     Name = "dpp-public-subnet-02"
   }
